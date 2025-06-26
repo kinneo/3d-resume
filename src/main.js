@@ -4,6 +4,9 @@ import * as THREE from 'three';
 
 import {OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+
+
 const scene = new THREE.Scene();
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -19,8 +22,15 @@ camera.position.setZ(30);
 renderer.render(scene, camera);
 
 const geometry = new THREE.TorusGeometry(10,3,16,100)
-const material = new THREE.MeshStandardMaterial({color: 0xFF6347});
+//const material = new THREE.MeshStandardMaterial({color: 0xFF6347});
+//const torus = new THREE.Mesh(geometry, material);
+
+const donutTexture = new THREE.TextureLoader().load('/images/donut.jpg');
+
+const material = new THREE.MeshStandardMaterial({ map: donutTexture });
+
 const torus = new THREE.Mesh(geometry, material);
+
 
 scene.add(torus);
 
@@ -77,11 +87,34 @@ scene.add(moon);
 moon.position.z = 30;
 moon.position.setX(-10);
 
+const gltfLoader = new GLTFLoader();
+
+let duck;
+
+gltfLoader.load('/models/duck.glb',
+  (gltf) => {
+    duck = gltf.scene;
+    duck.scale.set(10, 10, 10);
+    duck.position.set(60, -20, -30);
+    scene.add(duck);
+  },
+  undefined,
+  (err) => console.error('Duck loading error:', err)
+);
+
+
+
 function moveCamera(){
   const t = document.body.getBoundingClientRect().top;
   moon.rotation.x += 0.05;
   moon.rotation.y += 0.075;
   moon.rotation.z += 0.05;
+
+  if (duck) {
+    duck.rotation.x += 0.05;
+    duck.rotation.y += 0.05;
+    //duck.rotation.z += 0.05;
+  }
 
   kin.rotation.y += 0.01;
   kin.rotation.z += 0.01;

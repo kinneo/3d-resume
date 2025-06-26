@@ -109,7 +109,7 @@ gltfLoader.load('/models/duck.glb',
 
 let rocket;
 
-gltfLoader.load('/models/rocket2.glb',
+gltfLoader.load('/models/rocket.glb',
   (gltf) => {
     rocket = gltf.scene;
     rocket.scale.set(10,10,10);

@@ -6,6 +6,8 @@ import {OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
+let duck;
+let astronaut;
 
 const scene = new THREE.Scene();
 
@@ -40,6 +42,11 @@ pointLight.position.set(20, 10, 10);
 
 const ambientLight = new THREE.AmbientLight(0xffffff)
 scene.add(pointLight, ambientLight)
+
+const testLight = new THREE.PointLight(0xffffff, 1, 100);
+testLight.position.set(10, 0, 0); // Place near astronaut
+scene.add(testLight);
+
 
 ///const lightHelper = new THREE.PointLightHelper(pointLight)
 //const gridHelper = new THREE.GridHelper(200,50);
@@ -89,8 +96,6 @@ moon.position.setX(-10);
 
 const gltfLoader = new GLTFLoader();
 
-let duck;
-
 gltfLoader.load('/models/duck.glb',
   (gltf) => {
     duck = gltf.scene;
@@ -102,7 +107,23 @@ gltfLoader.load('/models/duck.glb',
   (err) => console.error('Duck loading error:', err)
 );
 
+let rocket;
 
+gltfLoader.load('/models/rocket2.glb',
+  (gltf) => {
+    rocket = gltf.scene;
+    rocket.scale.set(10,10,10);
+    rocket.position.set(-50, 0, -10); // Start on the left
+
+    rocket.rotation.x = -Math.PI / 3;
+    rocket.rotation.z = -Math.PI / 2;
+    //rocket.rotation.y = -Math.PI / 8;
+
+    scene.add(rocket);
+  },
+  undefined,
+  (err) => console.error('Rocket loading error:', err)
+);
 
 function moveCamera(){
   const t = document.body.getBoundingClientRect().top;
@@ -114,6 +135,10 @@ function moveCamera(){
     duck.rotation.x += 0.05;
     duck.rotation.y += 0.05;
     //duck.rotation.z += 0.05;
+  }
+
+  if (rocket) {
+    rocket.position.x = -50 + (t * -0.04); // Adjust multiplier for speed
   }
 
   kin.rotation.y += 0.01;
@@ -133,6 +158,12 @@ function animate(){
   torus.rotation.y += 0.005; // 0.005
   torus.rotation.z += 0.01; // 0.01
 
+  if (astronaut) {
+    astronaut.rotation.y += 0.01;
+    astronaut.rotation.x += 0.005;
+  }
+
+
   //moon.rotation.y += 0.002;
 
   controls.update();
@@ -141,3 +172,21 @@ function animate(){
 }
 
 animate();
+
+
+
+
+
+// gltfLoader.load('/models/astronaut.glb', (gltf) => {
+//   const astronaut = gltf.scene;
+//   astronaut.position.set(10, 0, -5);
+//   astronaut.rotation.y = Math.PI; // optional flip
+//   scene.add(astronaut);
+
+//   function animateAstronaut() {
+//     requestAnimationFrame(animateAstronaut);
+//     astronaut.rotation.y += 0.01; // auto-rotate
+//   }
+
+//   animateAstronaut();
+// });
